@@ -11,6 +11,7 @@ public interface IRepository<T> where T : class
     Task<T> InsertAsync(T entity);
 
     Task UpdateAsync(T entity);
+    Task UpdateAsync(T entity, T oldEntity);
 
     Task DeleteAsync(int id);
     string GetEntityNotFoundErrorMessage(int id);

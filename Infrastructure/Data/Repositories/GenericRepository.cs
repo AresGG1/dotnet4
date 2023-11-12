@@ -38,6 +38,13 @@ public abstract class GenericRepository<T> : IRepository<T> where T : class
         Table.Update(entity);
         return Task.CompletedTask;
     }
+    public virtual Task UpdateAsync(T entity, T oldEntity)
+    {
+        DatabaseContext.Entry(oldEntity).State = EntityState.Detached;
+        
+        Table.Update(entity);
+        return Task.CompletedTask;
+    }
 
     public virtual async Task DeleteAsync(int id)
     {

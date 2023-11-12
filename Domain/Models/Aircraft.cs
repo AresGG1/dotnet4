@@ -25,9 +25,20 @@ public class Aircraft
                 );
         }
         
+        if (CheckFlightHours())
+        {
+            throw new FlightHoursException("This aircraft does not allow more flights");
+        }
+        
         FlightDestinations.Add(flightDestination);
     }
+    public void DeleteDestinationIfExists(int destinationId)
+    {
+        var destination = FlightDestinations.Find(fd => fd.Id == destinationId);
 
+
+        FlightDestinations.Remove(destination);
+    }
     private bool CheckTimeConflict(FlightDestination newDestination, FlightDestination currentDestination)
     {
         var difference = newDestination.Start - currentDestination.Start;
@@ -38,5 +49,10 @@ public class Aircraft
     private bool CheckFlightHours()
     {
         return this.FlightHours > 2000;
+    }
+    
+    public void RemoveFlightDestination(FlightDestination flightDestination)
+    {
+        FlightDestinations.Remove(flightDestination);
     }
 }

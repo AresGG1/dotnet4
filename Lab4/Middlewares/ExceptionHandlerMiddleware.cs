@@ -22,6 +22,11 @@ public class ExceptionHandlerMiddleware
             httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             await SetMessage(httpContext.Response, e.Message);
         }
+        catch (FlightHoursException e)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await SetMessage(httpContext.Response, e.Message);
+        }
         catch (EntityNotFoundException e)
         {
             httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;

@@ -20,19 +20,20 @@ public class UpdateFlightDestinationHandler : IRequestHandler<UpdateFlightDestin
     public async Task Handle(UpdateFlightDestinationCommand request, CancellationToken cancellationToken)
     {
         var flightDestination = _mapper.Map<FlightDestination>(request);
-        
-        await _unitOfWork.FlightDestinationRepository.UpdateAsync(flightDestination);
-        
-        try
+        var currentFlightDest =
+            await _unitOfWork.FlightDestinationRepository.GetCompleteEntityAsync(flightDestination.Id);
+
+        if (flightDestination.AircraftId != currentFlightDest.AircraftId)
         {
-            await _unitOfWork.SaveChangesAsync();
+            var newAircraft = await _unitOfWork.AircraftRepository.GetCompleteEntityAsync(flightDestination.AircraftId);
+            newAircraft.AddFlightDestination(flightDestination);
+            currentFlightDest.Aircraft.RemoveFlightDestination(currentFlightDest);
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            //Throw not found exception
-            await _unitOfWork.FlightDestinationRepository.GetByIdAsync(flightDestination.Id);
-            
-            throw;
-        }
+
+        
+        await _unitOfWork.FlightDestinationRepository.UpdateAsync(flightDestination, currentFlightDest);
+        
+        await _unitOfWork.SaveChangesAsync();
+        
     }
 }
