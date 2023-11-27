@@ -27,6 +27,14 @@ public class FlightDestinationRepository : GenericRepository<FlightDestination>,
         return flightDestination;
     }
 
+    public async Task<IEnumerable<FlightDestination>> GetByAircraftIdAsync(int aircraftId)
+    {
+        return await Table
+            .Where(fd => fd.Aircraft.Id == aircraftId)
+            .Include(fd => fd.Aircraft)
+            .ToListAsync();
+    }
+
     public override async Task<IEnumerable<FlightDestination>> GetAsync()
     {
         return await Table

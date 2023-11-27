@@ -81,4 +81,20 @@ public class FlightsDestinationsController : Controller
         await _mediator.Send(new DeleteFlightDestinationCommand(id));        
         return NoContent();
     }
+    
+    [HttpGet("aircrafts/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<FlightDestinationResponse>>> GetByAircraftIdAsync(int id)
+    {
+        var request = new GetFlightDestinationsByAircraftIdQuery
+        {
+            AircraftId = id
+        };
+        
+        var flightDestinations = 
+            await _mediator.Send(request);
+       
+        return Ok(flightDestinations);
+    }   
 }
