@@ -12,7 +12,10 @@ using FluentValidation.AspNetCore;
 using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Repositories;
+using Lab4;
+using Lab4.Consumers;
 using Lab4.Middlewares;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,10 +25,18 @@ builder.Services.AddSwaggerGen();
 
 //
 builder.Services.AddMediatR(cfg =>
-    {
-        cfg.RegisterServicesFromAssembly(typeof(GetAircraftsHandler).GetTypeInfo().Assembly);
-    });
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetAircraftsHandler).GetTypeInfo().Assembly);
+});
 
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<AircraftCreatedConsumer>();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAircraftCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<DeleteAircraftCommand>();
